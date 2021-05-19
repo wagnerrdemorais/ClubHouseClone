@@ -23,7 +23,7 @@ export default class SocketBuilder {
             withCredentials: false,
         });
 
-        socket.on("connection", () => console.log("Conectado!!"));
+        socket.on("connect", () => console.log("New Connection!!!"));
 
         socket.on(constants.events.USER_CONNECTED, this.onUserConnected);
 
