@@ -11,6 +11,7 @@ export default class View {
         imgUser.src = img;
         imgUser.al = username;
     }
+    
     static updateRoomTopic({ topic }) {
         roomTopic.innerHTML = topic;
     }
