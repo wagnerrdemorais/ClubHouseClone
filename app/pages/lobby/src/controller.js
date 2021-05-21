@@ -28,7 +28,8 @@ export default class LobbyController {
 
     onLobbyUpdated() {
         return (rooms) => {
-            console.log("rooms>>>", rooms);
+            // console.log("rooms>>>", rooms);
+            console.log("rooms>>>");
             this.view.updateRoomList(rooms)
         };
     }

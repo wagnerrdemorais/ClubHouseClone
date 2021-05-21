@@ -1,12 +1,28 @@
 import { constants } from "../util/constants.js";
 import Attendee from "../entities/attendee.js";
 import Room from "../entities/room.js";
+import CustomMap from "../util/customMap.js";
 
 export default class RoomsController {
     #users = new Map();
 
-    constructor() {
-        this.rooms = new Map();
+    constructor({ roomsPubSub }) {
+        this.roomsPubSub = roomsPubSub;
+        this.rooms = new CustomMap({
+            observer: this.#roomObserver(),
+            customMapper: this.#mapRoom.bind(this)
+        });
+    }
+
+    #roomObserver() {
+        return {
+            notify: (rooms) => this.notifyRoomSubscribers(rooms),
+        };
+    }
+
+    notifyRoomSubscribers(rooms) {
+        const event = constants.event.LOBBY_UPDATED;
+        this.roomsPubSub.emit(event, [...rooms.values()]);
     }
 
     onNewConnection(socket) {
@@ -88,10 +104,13 @@ export default class RoomsController {
 
         const updatedUserData = this.#updateGlobalUserData(userId, user, roomId);
 
-        console.log("UpdatedUserData: ", { updatedUserData });
+        // console.log("UpdatedUserData: ", { updatedUserData });
+        console.log("UpdatedUserData: ");
 
         const updatedRoom = this.#joinUserRoom(socket, updatedUserData, room);
-        console.log("UpdatedRoom: ", { updatedRoom });
+        // console.log("UpdatedRoom: ", { updatedRoom });
+
+        console.log("UpdatedRoom: ");
         this.#notifyUsersOnRoom(socket, roomId, updatedUserData);
         this.#replyWithActiveUsers(socket, updatedRoom.users);
     }

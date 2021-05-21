@@ -6,12 +6,16 @@ const roomTopic = document.getElementById("pTopic");
 const gridAttendees = document.getElementById("gridAttendees");
 const gridSpeakers = document.getElementById("gridSpeakers");
 
+const btnClipBoard = document.getElementById("btnClipBoard");
+const btnMicrophone = document.getElementById("btnMicrophone");
+const btnClap = document.getElementById("btnClap");
+
 export default class View {
     static updateUserImage({ img, username }) {
         imgUser.src = img;
         imgUser.al = username;
     }
-    
+
     static updateRoomTopic({ topic }) {
         roomTopic.innerHTML = topic;
     }
@@ -49,5 +53,20 @@ export default class View {
         }
 
         baseElement.innerHTML += htmlTemplate;
+    }
+
+    static showUserFeatures(isSpeaker) {
+        //attendee
+        if(!isSpeaker){
+            btnClap.classList.remove('hidden')
+            btnMicrophone.classList.add('hidden')            
+            btnClipBoard.classList.add('hidden')
+            return;
+        }
+
+        //speaker
+        btnClap.classList.add('hidden')
+        btnMicrophone.classList.remove('hidden')            
+        btnClipBoard.classList.remove('hidden')
     }
 }
