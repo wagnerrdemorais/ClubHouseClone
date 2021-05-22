@@ -55,18 +55,39 @@ export default class View {
         baseElement.innerHTML += htmlTemplate;
     }
 
+    static _createdAudioElement({ muted = true, srcObject }) {
+        const audio = document.createElement("audio");
+        audio.muted = muted;
+        audio.srcObject = srcObject;
+
+        audio.addEventListener("loadedmetadata", async () => {
+            try {
+                await audio.play();
+            } catch (error) {
+                console.error("error when playing audio: ", error);
+            }
+        });
+    }
+
+    static renderAudioElement({ callerId, stream, isCurrentId }) {
+        View._createdAudioElement({
+            muted: isCurrentId,
+            srcObject: stream,
+        });
+    }
+
     static showUserFeatures(isSpeaker) {
         //attendee
-        if(!isSpeaker){
-            btnClap.classList.remove('hidden')
-            btnMicrophone.classList.add('hidden')            
-            btnClipBoard.classList.add('hidden')
+        if (!isSpeaker) {
+            btnClap.classList.remove("hidden");
+            btnMicrophone.classList.add("hidden");
+            btnClipBoard.classList.add("hidden");
             return;
         }
 
         //speaker
-        btnClap.classList.add('hidden')
-        btnMicrophone.classList.remove('hidden')            
-        btnClipBoard.classList.remove('hidden')
+        btnClap.classList.add("hidden");
+        btnMicrophone.classList.remove("hidden");
+        btnClipBoard.classList.remove("hidden");
     }
 }
