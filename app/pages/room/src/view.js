@@ -9,6 +9,8 @@ const gridSpeakers = document.getElementById("gridSpeakers");
 const btnClipBoard = document.getElementById("btnClipBoard");
 const btnMicrophone = document.getElementById("btnMicrophone");
 const btnClap = document.getElementById("btnClap");
+const toggleImage = document.getElementById("toggleImage");
+
 
 export default class View {
     static updateUserImage({ img, username }) {
@@ -89,5 +91,24 @@ export default class View {
         btnClap.classList.add("hidden");
         btnMicrophone.classList.remove("hidden");
         btnClipBoard.classList.remove("hidden");
+    }
+
+    static _onClapClick(command) {
+        return () => {
+            command();
+            const basePath = './../../assets/icons/'
+            const handActive = 'hand-solid.svg'
+            const handInactive = 'hand.svg'
+
+            if(toggleImage.src.match(handInactive)){
+                toggleImage.src = `${basePath}${handActive}`
+                return ;
+            }
+            toggleImage.src = `${basePath}${handInactive}`
+        };
+    }
+
+    static configureClapButton(command) {
+        btnClap.addEventListener("click", View._onClapClick(command));
     }
 }

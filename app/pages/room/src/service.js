@@ -28,6 +28,34 @@ export default class RoomService {
         this.currentUser = users.find(({ peerId }) => peerId === this.currentPeer.id);
     }
 
+    async _reconnectAsSpeaker() {
+        return this.this.switchAudioStreamSource({ realAudio: true });
+    }
+
+    _reconnectPeers(stream) {
+        for (const peer of this.peers.values()) {
+            const peerId = peer.call.peer;
+            peer.call.close();
+            console.log("calling: ", peerId);
+
+            this.currentPeer.call(peerId, stream);
+        }
+    }
+
+    async switchAudioStreamSource({ realAudio }) {
+        const userAudio = realAudio ?  await this.media.getUserAudio() : this.media.createMediaStreamFake();
+
+        this.currentStream = new UserStream({
+            isFake: realAudio,
+            stream: userAudio,
+        });
+
+        this.currentUser.isSpeaker = realAudio;
+
+        //has to close current call to call again
+        this._reconnectPeers(this.currentStream.stream);
+    }
+
     upgradeUserPermission(user) {
         if (!user.isSpeaker) return;
 
@@ -36,6 +64,8 @@ export default class RoomService {
         if (!isCurrentUser) return;
 
         this.currentUser = user;
+
+        return this._reconnectAsSpeaker();
     }
 
     async getCurrentStream() {
@@ -56,11 +86,11 @@ export default class RoomService {
         return { isCurrentId };
     }
 
-    disconnectPeer({peerId}){
-        if(!this.peers.has(peerId)) return;
+    disconnectPeer({ peerId }) {
+        if (!this.peers.has(peerId)) return;
 
-        this.peers.get(peerId).call.close()
-        this.peers.delete(peerId)
+        this.peers.get(peerId).call.close();
+        this.peers.delete(peerId);
     }
 
     async callNewUser(user) {

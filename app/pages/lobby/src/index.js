@@ -16,7 +16,9 @@ const socketBuilder = new LobbySocketBuilder({
 const dependencies = {
     socketBuilder,
     user,
-    view: View
+    view: View,
 };
 
-await LobbyController.initialize(dependencies)
+LobbyController.initialize(dependencies).catch((error) => {
+    alert(error.message);
+});

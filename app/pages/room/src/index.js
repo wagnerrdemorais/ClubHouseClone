@@ -29,7 +29,7 @@ const socketBuilder = new RoomSocketBuilder({
 });
 
 const roomService = new RoomService({
-    media: Media
+    media: Media,
 });
 
 const dependencies = {
@@ -40,4 +40,6 @@ const dependencies = {
     peerBuilder,
 };
 
-await RoomController.initialize(dependencies);
+RoomController.initialize(dependencies).catch((error) => {
+    alert(error.message);
+});

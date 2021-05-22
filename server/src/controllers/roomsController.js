@@ -10,7 +10,7 @@ export default class RoomsController {
         this.roomsPubSub = roomsPubSub;
         this.rooms = new CustomMap({
             observer: this.#roomObserver(),
-            customMapper: this.#mapRoom.bind(this)
+            customMapper: this.#mapRoom.bind(this),
         });
     }
 
@@ -18,6 +18,38 @@ export default class RoomsController {
         return {
             notify: (rooms) => this.notifyRoomSubscribers(rooms),
         };
+    }
+
+    speakRequest(socket) {
+        const userId = socket.id;
+        const user = this.#users.get(userId);
+        const roomId = user.roomId;
+        const owner = this.rooms.get(roomId)?.owner;
+        socket.to(owner.id).emit(constants.event.SPEAK_REQUEST, user);
+    }
+
+    speakAnswer(socket, { answer, user }) {
+        const userId = user.id//TODO: error here, user undefined
+        const currentUser = this.#users.get(userId)
+        const updatedUser = new Attendee({
+            ...currentUser,
+            isSpeaker: answer
+        })
+
+        this.#users.set(userId, updatedUser);
+        const roomId = user.roomId;
+        const room = this.rooms.get(roomId);
+        const userOnRoom = [...room.users.values()].find(({ id }) => id === userId);
+
+        room.users.delete(userOnRoom);
+        room.users.add(updatedUser);
+        this.rooms.set(roomId, room);
+
+        //return to himself
+        socket.emit(constants.event.UPGRADE_USER_PERMISSION, updatedUser);
+
+        //notify entire room to call this speaker
+        this.#notifyUserProfileUpgrade(socket, roomId, updatedUser);
     }
 
     notifyRoomSubscribers(rooms) {
