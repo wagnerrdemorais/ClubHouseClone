@@ -1,5 +1,5 @@
 export const constants = {
-    socketUrl: "http://localhost:3000",
+    socketUrl: "https://ch-socket-server.herokuapp.com/",
     socketNamespaces: {
         room: "room",
         lobby: "lobby",
@@ -7,11 +7,11 @@ export const constants = {
 
     peerConfig: Object.values({
         id: undefined,
-        // config:{
-        //     port: 9000,
-        //     host: 'localhost',
-        //     path: '/'
-        // }
+        config: {
+            host: "ch-peerjs-server.herokuapp.com",
+            secure: true,
+            path: "/",
+        },
     }),
 
     pages: {
