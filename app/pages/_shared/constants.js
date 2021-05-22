@@ -14,6 +14,11 @@ export const constants = {
         // }
     }),
 
+    pages: {
+        lobby: "/pages/lobby",
+        login: "/pages/login",
+    },
+
     events: {
         USER_CONNECTED: "userConnection",
         USER_DISCONNECTED: "userDisconnection",

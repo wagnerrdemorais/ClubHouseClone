@@ -5,6 +5,7 @@ export default class RoomService {
         this.currentPeer = {};
         this.currentUser = {};
         this.currentStream = {};
+        this.isAudioActive = true;
 
         this.peers = new Map();
     }
@@ -24,12 +25,17 @@ export default class RoomService {
         return this.currentUser;
     }
 
+    async toogleAudioActivation() {
+        this.isAudioActive = !this.isAudioActive;
+        this.switchAudioStreamSource({ realAudio: this.isAudioActive });
+    }
+
     updateCurrentUserProfile(users) {
         this.currentUser = users.find(({ peerId }) => peerId === this.currentPeer.id);
     }
 
     async _reconnectAsSpeaker() {
-        return this.this.switchAudioStreamSource({ realAudio: true });
+        return this.switchAudioStreamSource({ realAudio: true });
     }
 
     _reconnectPeers(stream) {
@@ -43,7 +49,7 @@ export default class RoomService {
     }
 
     async switchAudioStreamSource({ realAudio }) {
-        const userAudio = realAudio ?  await this.media.getUserAudio() : this.media.createMediaStreamFake();
+        const userAudio = realAudio ? await this.media.getUserAudio() : this.media.createMediaStreamFake();
 
         this.currentStream = new UserStream({
             isFake: realAudio,

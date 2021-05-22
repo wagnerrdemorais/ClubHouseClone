@@ -1,3 +1,4 @@
+import { constants } from "../../_shared/constants.js";
 import Attendee from "./entities/attendee.js";
 import getTemplate from "./templates/attendeeTemplate.js";
 
@@ -10,7 +11,7 @@ const btnClipBoard = document.getElementById("btnClipBoard");
 const btnMicrophone = document.getElementById("btnMicrophone");
 const btnClap = document.getElementById("btnClap");
 const toggleImage = document.getElementById("toggleImage");
-
+const btnLeave = document.getElementById("btnLeave");
 
 export default class View {
     static updateUserImage({ img, username }) {
@@ -96,19 +97,52 @@ export default class View {
     static _onClapClick(command) {
         return () => {
             command();
-            const basePath = './../../assets/icons/'
-            const handActive = 'hand-solid.svg'
-            const handInactive = 'hand.svg'
+            const basePath = "./../../assets/icons/";
+            const handActive = "hand-solid.svg";
+            const handInactive = "hand.svg";
 
-            if(toggleImage.src.match(handInactive)){
-                toggleImage.src = `${basePath}${handActive}`
-                return ;
+            if (toggleImage.src.match(handInactive)) {
+                toggleImage.src = `${basePath}${handActive}`;
+                return;
             }
-            toggleImage.src = `${basePath}${handInactive}`
+            toggleImage.src = `${basePath}${handInactive}`;
         };
     }
 
     static configureClapButton(command) {
         btnClap.addEventListener("click", View._onClapClick(command));
+    }
+
+    static _redirectToLobby() {
+        window.location = constants.pages.lobby;
+    }
+
+    static _toggleMicrophoneIcon() {
+        const icon = btnMicrophone.firstElementChild;
+        const classes = [...icon.classList];
+
+        const inactiveMicClass = "fa-microphone-slash";
+        const activeMicClass = "fa-microphone";
+
+        const isInactiveMic = classes.includes(inactiveMicClass);
+        if (isInactiveMic) {
+            icon.classList.remove(inactiveMicClass);
+            icon.classList.add(activeMicClass);
+            return;
+        }
+
+        icon.classList.add(inactiveMicClass);
+        icon.classList.remove(activeMicClass);
+    }
+
+    static configureLeaveButton(command) {
+        btnLeave.addEventListener("click", () => View._redirectToLobby());
+    }
+
+    static configureOnMicrophoneActivation(command) {
+        btnMicrophone.addEventListener("click", () => {
+            View._toggleMicrophoneIcon();
+            command();
+        });
     }
 }
